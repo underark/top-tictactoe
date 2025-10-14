@@ -94,16 +94,28 @@ const GameBoard = (function() {
 		return winnerFound;
 	}
 
+	const checkWinner = (position) => {
+		const row = getRowFromPosition(position);
+		const column = getColumnFromPosition(position);
+
+		if (checkLeftDiagonal) return true;
+
+		if (checkRightDiagonal) return true;
+
+		if (checkRow(row)) return true;
+
+		if (checkColumn(column)) return true;
+
+		return false;
+	}
+
 	setBoard();
 	return {
 		showBoard,
 		markBoard,
 		getRowFromPosition,
 		getColumnFromPosition,
-		checkLeftDiagonal,
-		checkRightDiagonal,
-		checkRow,
-		checkColumn,
+		checkWinner,
 	}
 })();
 

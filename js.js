@@ -10,7 +10,8 @@ function createTile() {
 }
 
 const GameBoard = (function() {
-	const boardSize = 9;
+	const rowSize = 3;
+	const boardSize = rowSize * rowSize;
 	const board = new Array(boardSize);
 
 	const setBoard = () => {
@@ -31,15 +32,12 @@ const GameBoard = (function() {
 	}
 
 	const checkLeftDiagonal = () => {
-		const name = board[0].player;
-		const jump = 4;
-		const start = 0;
-		const end = 8;
+		const jump = rowSize + 1;
 		let winnerFound = true;
-		for (let i = start; i < end + 1; i += jump) {
+		for (let i = jump; i < boardSize; i += jump) {
 			if (board[i].marked == false) {
 				winnerFound = false;
-			} else if (board[i].player !== name) {
+			} else if (board[i - jump].player !== board[i].player) {
 				winnerFound = false;	
 			} 
 		}
@@ -47,33 +45,35 @@ const GameBoard = (function() {
 	}
 
 	const checkRightDiagonal = () => {
-		const name = board[2].player;
-		const jump = 2;
-		const start = 2;
-		const end = 6;
+		const jump = rowSize - 1;
+		const end = boardSize - rowSize;
 		let winnerFound = true;
-		for (let i = start; i < end + 1; i += jump) {
+		for (let i = jump * 2; i <= end; i += jump) {
 			if (board[i].marked == false) {
 				winnerFound = false;
-			} else if (board[i].player !== name) {
+			} else if (board[i - jump].player !== board[i].player) {
 				winnerFound = false;	
 			} 
 		}
 		return winnerFound;
 	}
 
-	const checkRows = () => {
-		for (let r = 0; r < 2; r++) {
-			let winnerFound = true;
-			const name = board[r * 3].player;
-
-			for (let t = 0; t < 3; t++) {
-				console.log(board[r * 3 + t].player);
-				if (board[r * 3 + t].player !== name) winnerFound = false;
+	const checkRow = (row) => {
+		let winnerFound = true;
+		const rowEnd = rowSize - 1;
+		const rowIndex = row * 3;
+		for (let i = rowEnd; i < 0; i--) {
+			if (board[rowIndex + i].marked == false) {
+				winnerFound = false;
+			} else if (board[rowIndex + i - 1].player !== board[i].player) {
+				winnerFound = false;
 			}
-
-			if (winnerFound == true) return winnerFound;
 		}
+		return winnerFound;
+	}
+
+	const checkColumn = (column) => {
+		
 	}
 
 	setBoard();
@@ -82,7 +82,8 @@ const GameBoard = (function() {
 		markBoard,
 		checkLeftDiagonal,
 		checkRightDiagonal,
-		checkRows,
+		checkRow,
+		checkColumn,
 	}
 })();
 
@@ -91,7 +92,7 @@ const game = (function(board) {
 
 const Alex = createPlayer("Alex");
 const Peter = createPlayer("Peter");
-GameBoard.markBoard(0, Alex.name);
-GameBoard.markBoard(4, Alex.name);
-GameBoard.markBoard(8, Peter.name);
+GameBoard.markBoard(0, Peter.name);
+GameBoard.markBoard(1, Peter.name);
+GameBoard.markBoard(2, Peter.name);
 console.log(GameBoard.checkRightDiagonal());

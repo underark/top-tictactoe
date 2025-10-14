@@ -73,7 +73,16 @@ const GameBoard = (function() {
 	}
 
 	const checkColumn = (column) => {
-		
+		let winnerFound = true;
+		const columnEnd = column + rowSize * (rowSize - 1);
+		for (let i = columnEnd; i > column; i -= rowSize) {
+			if (board[i].marked == false) {
+				winnerFound = false;
+			} else if (board[i].player !== board[i - rowSize].player) {
+				winnerFound = false;
+			}
+		}
+		return winnerFound;
 	}
 
 	setBoard();
@@ -92,7 +101,7 @@ const game = (function(board) {
 
 const Alex = createPlayer("Alex");
 const Peter = createPlayer("Peter");
-GameBoard.markBoard(0, Peter.name);
 GameBoard.markBoard(1, Peter.name);
-GameBoard.markBoard(2, Peter.name);
-console.log(GameBoard.checkRow(0));
+GameBoard.markBoard(4, Peter.name);
+GameBoard.markBoard(7, Peter.name);
+console.log(GameBoard.checkColumn(1));

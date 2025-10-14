@@ -62,7 +62,7 @@ const GameBoard = (function() {
 		let winnerFound = true;
 		const rowEnd = rowSize - 1;
 		const rowIndex = row * 3;
-		for (let i = rowEnd; i < 0; i--) {
+		for (let i = rowEnd; i > 0; i--) {
 			if (board[rowIndex + i].marked == false) {
 				winnerFound = false;
 			} else if (board[rowIndex + i - 1].player !== board[i].player) {
@@ -95,4 +95,4 @@ const Peter = createPlayer("Peter");
 GameBoard.markBoard(0, Peter.name);
 GameBoard.markBoard(1, Peter.name);
 GameBoard.markBoard(2, Peter.name);
-console.log(GameBoard.checkRightDiagonal());
+console.log(GameBoard.checkRow(0));

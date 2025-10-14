@@ -98,13 +98,21 @@ const GameBoard = (function() {
 		const row = getRowFromPosition(position);
 		const column = getColumnFromPosition(position);
 
-		if (checkLeftDiagonal) return true;
+		if (checkLeftDiagonal()) {
+			return true;
+		}
 
-		if (checkRightDiagonal) return true;
+		if (checkRightDiagonal()) {
+			return true;
+		}
 
-		if (checkRow(row)) return true;
+		if (checkRow(row)) {
+			return true;
+		}
 
-		if (checkColumn(column)) return true;
+		if (checkColumn(column)) {
+			return true;
+		}
 
 		return false;
 	}
@@ -119,12 +127,10 @@ const GameBoard = (function() {
 	}
 })();
 
-const game = (function(board) {
-})(GameBoard);
-
 const Alex = createPlayer("Alex");
 const Peter = createPlayer("Peter");
-GameBoard.markBoard(1, Peter.name);
-GameBoard.markBoard(4, Peter.name);
-GameBoard.markBoard(7, Peter.name);
-console.log(GameBoard.checkColumn(1));
+GameBoard.markBoard(0, Alex.name);
+GameBoard.markBoard(3, Alex.name);
+GameBoard.markBoard(6, Alex.name);
+
+console.log(GameBoard.checkWinner(4));

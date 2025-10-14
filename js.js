@@ -127,10 +127,9 @@ const GameBoard = (function() {
 	}
 })();
 
+const Game = (function() {
+
+})();
+
 const Alex = createPlayer("Alex");
 const Peter = createPlayer("Peter");
-GameBoard.markBoard(0, Alex.name);
-GameBoard.markBoard(3, Alex.name);
-GameBoard.markBoard(6, Alex.name);
-
-console.log(GameBoard.checkWinner(4));

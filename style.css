@@ -55,6 +55,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Original CSS */
+.container {
+	justify-items: center;
+}
+
+.board {
+	display: grid;
+	grid-template: repeat(3, 150px) / repeat(3, 150px);
+	justify-items: center;
+	align-items: center;
+	gap: 12px;
+}
+
+.input-group {
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+}
 
 .tile {
 	width: 100px;
@@ -62,11 +79,7 @@ h1, h2, h3, h4, h5, h6 {
 	background-color: yellow;
 }
 
-.container {
-	display: grid;
-	grid-template: repeat(3, 150px) / repeat(3, 150px);
+form {
+	display: flex;
 	gap: 12px;
-	justify-items: center;
-	align-items: center;
-	justify-self: center;
 }

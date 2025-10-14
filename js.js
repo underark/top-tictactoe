@@ -31,6 +31,15 @@ const GameBoard = (function() {
 		}
 	}
 
+	const getRowFromPosition = (position) => {
+		return Math.floor(position / rowSize);
+	}
+
+	const getColumnFromPosition = (position) => {
+		const row = getRowFromPosition(position);
+		return position - (row * rowSize);
+	}
+
 	const checkLeftDiagonal = () => {
 		const jump = rowSize + 1;
 		let winnerFound = true;
@@ -89,6 +98,8 @@ const GameBoard = (function() {
 	return {
 		showBoard,
 		markBoard,
+		getRowFromPosition,
+		getColumnFromPosition,
 		checkLeftDiagonal,
 		checkRightDiagonal,
 		checkRow,

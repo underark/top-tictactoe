@@ -1,18 +1,16 @@
-function createPlayer(name) {
-	return {name};
-}
 
-function createTile() {
-	return {
-		marked: false,
-		player: "",
-	}
-}
 
 const GameBoard = (function() {
 	const rowSize = 3;
 	const boardSize = rowSize * rowSize;
 	const board = new Array(boardSize);
+
+	function createTile() {
+		return {
+			marked: false,
+			player: "",
+		}
+	}
 
 	const setBoard = () => {
 		for (let i = 0; i < boardSize; i++) {
@@ -20,8 +18,17 @@ const GameBoard = (function() {
 		}
 	}
 
-	const showBoard = () => {
-		console.log(board);
+	const getSize = () => {
+		return boardSize;
+	}
+
+	const getCells = () => {
+		const array = new Array();
+		for (let i = 0; i < boardSize; i++) {
+			array.push(board[i]);
+		}
+		console.log(array);
+		return array;
 	}
 
 	const markBoard = (position, name) => {
@@ -119,7 +126,8 @@ const GameBoard = (function() {
 
 	setBoard();
 	return {
-		showBoard,
+		getSize,
+		getCells,
 		markBoard,
 		getRowFromPosition,
 		getColumnFromPosition,
@@ -128,8 +136,40 @@ const GameBoard = (function() {
 })();
 
 const Game = (function() {
-
+	const createPlayer = (name) => {
+		return {name};
+	}
 })();
+
+const Display = (function() {
+	const showPlayerPositions = (board, tiles) => {
+		for (const [i, tile] of tiles.entries()) {
+			tile.textContent = board[i].player;
+		}
+	}
+
+	return {
+		showPlayerPositions,
+	}
+})();
+
 
 const Alex = createPlayer("Alex");
 const Peter = createPlayer("Peter");
+
+
+document.addEventListener("DOMContentLoaded", function() {
+	const tiles = document.querySelectorAll(".tile");
+	const form = document.querySelector("form");
+
+	for (const tile of tiles) {
+		tile.addEventListener("click", function() {
+			GameBoard.markBoard(tile.dataset.id, "Alex");
+			Display.showPlayerPositions(GameBoard.getCells(), tiles);
+		});
+	}
+
+	form.addEventListener("submit", (e) => {
+		e.preventDefault();
+	});
+})

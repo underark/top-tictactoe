@@ -23,11 +23,7 @@ const GameBoard = (function() {
 	}
 
 	const getCells = () => {
-		const array = new Array();
-		for (let i = 0; i < boardSize; i++) {
-			array.push(board[i]);
-		}
-		return array;
+		return structuredClone(board);
 	}
 
 	const markBoard = (position, name) => {
@@ -52,8 +48,10 @@ const GameBoard = (function() {
 		for (let i = jump; i < boardSize; i += jump) {
 			if (board[i].marked == false) {
 				winnerFound = false;
+				break;
 			} else if (board[i - jump].player !== board[i].player) {
-				winnerFound = false;	
+				winnerFound = false;
+				break;	
 			} 
 		}
 		return winnerFound;
@@ -66,8 +64,10 @@ const GameBoard = (function() {
 		for (let i = jump * 2; i <= end; i += jump) {
 			if (board[i].marked == false) {
 				winnerFound = false;
+				break;
 			} else if (board[i - jump].player !== board[i].player) {
-				winnerFound = false;	
+				winnerFound = false;
+				break;
 			} 
 		}
 		return winnerFound;
@@ -80,8 +80,10 @@ const GameBoard = (function() {
 		for (let i = rowEnd; i > 0; i--) {
 			if (board[rowIndex + i].marked == false) {
 				winnerFound = false;
+				break;
 			} else if (board[rowIndex + i - 1].player !== board[i].player) {
 				winnerFound = false;
+				break;
 			}
 		}
 		return winnerFound;
@@ -93,8 +95,10 @@ const GameBoard = (function() {
 		for (let i = columnEnd; i > column; i -= rowSize) {
 			if (board[i].marked == false) {
 				winnerFound = false;
+				break;
 			} else if (board[i].player !== board[i - rowSize].player) {
 				winnerFound = false;
+				break;
 			}
 		}
 		return winnerFound;
@@ -138,6 +142,7 @@ const Game = (function() {
 	let playerOne;
 	let playerTwo;
 	let turnPlayer = true;
+	let turnNumber = 0;
 
 	const createPlayer = (name) => {
 		return {name};
@@ -159,6 +164,13 @@ const Game = (function() {
 		return playerTwo.name;
 	}
 
+	const incrementTurn = () => {
+		turnNumber++;
+	}
+
+	const getTurnNumber = () => {
+		return turnNumber;
+	}
 	
 	const getTurnPlayer = () => {
 		return turnPlayer == true ? playerOne.name : playerTwo.name;
@@ -181,7 +193,7 @@ const Game = (function() {
 const Display = (function() {
 	const showPlayerPositions = (board, tiles, playerOneName) => {
 		for (const [i, tile] of tiles.entries()) {
-			if (board[i].marked !== false) tile.textContent = (board[i].player == playerOneName) ? "❌" : "⭕";
+			if (board[i].marked !== false) tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
 		}
 	}
 
@@ -196,9 +208,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	for (const tile of tiles) {
 		tile.addEventListener("click", function() {
-			GameBoard.markBoard(tile.dataset.id, Game.getTurnPlayer());
-			Game.changeTurnPlayer();
+			const position = tile.dataset.id;
+			GameBoard.markBoard(position, Game.getTurnPlayer());
 			Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
+
+			if (GameBoard.checkWinner(position)) {
+				console.log("winner!");
+			} else {
+				Game.changeTurnPlayer();
+			}
 		});
 	}
 

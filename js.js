@@ -150,6 +150,15 @@ const Game = (function() {
 	const setPlayerTwo = (name) => {
 		playerTwo = createPlayer(name);
 	}
+
+	const getPlayerOneName = () => {
+		return playerOne.name;
+	}
+
+	const getPlayerTwoName = () => {
+		return playerTwo.name;
+	}
+
 	
 	const getTurnPlayer = () => {
 		return turnPlayer == true ? playerOne.name : playerTwo.name;
@@ -162,15 +171,17 @@ const Game = (function() {
 	return {
 		setPlayerOne,
 		setPlayerTwo,
+		getPlayerOneName,
+		getPlayerTwoName,
 		getTurnPlayer,
 		changeTurnPlayer,
 	}
 })();
 
 const Display = (function() {
-	const showPlayerPositions = (board, tiles) => {
+	const showPlayerPositions = (board, tiles, playerOneName) => {
 		for (const [i, tile] of tiles.entries()) {
-			tile.textContent = board[i].player;
+			if (board[i].marked !== false) tile.textContent = (board[i].player == playerOneName) ? "❌" : "⭕";
 		}
 	}
 
@@ -187,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		tile.addEventListener("click", function() {
 			GameBoard.markBoard(tile.dataset.id, Game.getTurnPlayer());
 			Game.changeTurnPlayer();
-			Display.showPlayerPositions(GameBoard.getCells(), tiles);
+			Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
 		});
 	}
 

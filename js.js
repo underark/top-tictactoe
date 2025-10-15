@@ -142,7 +142,7 @@ const Game = (function() {
 	let playerOne;
 	let playerTwo;
 	let turnPlayer = true;
-	let turnNumber = 0;
+	let turnNumber = 1;
 
 	const createPlayer = (name) => {
 		return {name};
@@ -171,6 +171,14 @@ const Game = (function() {
 	const getTurnNumber = () => {
 		return turnNumber;
 	}
+
+	const isMaxTurn = (boardSize) => {
+		if (turnNumber >= boardSize) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	const getTurnPlayer = () => {
 		return turnPlayer == true ? playerOne.name : playerTwo.name;
@@ -187,6 +195,9 @@ const Game = (function() {
 		getPlayerTwoName,
 		getTurnPlayer,
 		changeTurnPlayer,
+		getTurnNumber,
+		incrementTurn,
+		isMaxTurn,
 	}
 })();
 
@@ -214,8 +225,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 			if (GameBoard.checkWinner(position)) {
 				console.log("winner!");
+			} else if (Game.isMaxTurn(GameBoard.getSize())) {
+				console.log("draw!");
 			} else {
 				Game.changeTurnPlayer();
+				Game.incrementTurn();
+				console.log(Game.getTurnNumber());
 			}
 		});
 	}

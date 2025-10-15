@@ -27,10 +27,12 @@ const GameBoard = (function() {
 	}
 
 	const markBoard = (position, name) => {
-		if (position >= 0 && position <= boardSize) {
+		if (!board[position].marked) {
 			board[position].marked = true;
 			board[position].player = name;
+			return true;
 		}
+		return false;
 	}
 
 	const getRowFromPosition = (position) => {
@@ -143,6 +145,7 @@ const Game = (function() {
 	let playerTwo;
 	let turnPlayer = true;
 	let turnNumber = 1;
+	let gameStarted = false;
 
 	const createPlayer = (name) => {
 		return {name};
@@ -188,6 +191,14 @@ const Game = (function() {
 		turnPlayer = (turnPlayer == true) ? false : true;
 	}
 
+	const changeGameStart = () => {
+		gameStarted = (gameStarted == true) ? false : true;
+	}
+
+	const isGameStarted = () => {
+		return gameStarted;
+	}
+
 	return {
 		setPlayerOne,
 		setPlayerTwo,
@@ -198,6 +209,8 @@ const Game = (function() {
 		getTurnNumber,
 		incrementTurn,
 		isMaxTurn,
+		changeGameStart,
+		isGameStarted,
 	}
 })();
 
@@ -219,18 +232,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	for (const tile of tiles) {
 		tile.addEventListener("click", function() {
-			const position = tile.dataset.id;
-			GameBoard.markBoard(position, Game.getTurnPlayer());
-			Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
-
-			if (GameBoard.checkWinner(position)) {
-				console.log("winner!");
-			} else if (Game.isMaxTurn(GameBoard.getSize())) {
-				console.log("draw!");
-			} else {
-				Game.changeTurnPlayer();
-				Game.incrementTurn();
-				console.log(Game.getTurnNumber());
+			if (Game.isGameStarted()) {
+				const position = tile.dataset.id;
+				const boardMarked = GameBoard.markBoard(position, Game.getTurnPlayer());
+				Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
+	
+				if (GameBoard.checkWinner(position)) {
+					console.log("winner!");
+				} else if (Game.isMaxTurn(GameBoard.getSize())) {
+					console.log("draw!");
+				} else if (boardMarked) {
+					Game.changeTurnPlayer();
+					Game.incrementTurn();
+				}
 			}
 		});
 	}
@@ -238,9 +252,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	form.addEventListener("submit", (e) => {
 		e.preventDefault();
 		const data = new FormData(form);
-		const playerOneName = data.get("player-one");
-		const playerTwoName = data.get("player-two");
-		Game.setPlayerOne(playerOneName);
-		Game.setPlayerTwo(playerTwoName);
+		switch (Game.isGameStarted()) {
+			case true:
+				break;
+			case false:
+				const playerOneName = data.get("player-one");
+				const playerTwoName = data.get("player-two");
+				Game.setPlayerOne(playerOneName);
+				Game.setPlayerTwo(playerTwoName);
+				Game.changeGameStart();
+				break;
+		}
 	});
 })

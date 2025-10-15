@@ -27,7 +27,6 @@ const GameBoard = (function() {
 		for (let i = 0; i < boardSize; i++) {
 			array.push(board[i]);
 		}
-		console.log(array);
 		return array;
 	}
 
@@ -136,8 +135,35 @@ const GameBoard = (function() {
 })();
 
 const Game = (function() {
+	let playerOne;
+	let playerTwo;
+	let turnPlayer = true;
+
 	const createPlayer = (name) => {
 		return {name};
+	}
+
+	const setPlayerOne = (name) => {
+		playerOne = createPlayer(name);
+	}
+
+	const setPlayerTwo = (name) => {
+		playerTwo = createPlayer(name);
+	}
+	
+	const getTurnPlayer = () => {
+		return turnPlayer == true ? playerOne.name : playerTwo.name;
+	}
+
+	const changeTurnPlayer = () => {
+		turnPlayer = (turnPlayer == true) ? false : true;
+	}
+
+	return {
+		setPlayerOne,
+		setPlayerTwo,
+		getTurnPlayer,
+		changeTurnPlayer,
 	}
 })();
 
@@ -153,23 +179,24 @@ const Display = (function() {
 	}
 })();
 
-
-const Alex = createPlayer("Alex");
-const Peter = createPlayer("Peter");
-
-
 document.addEventListener("DOMContentLoaded", function() {
 	const tiles = document.querySelectorAll(".tile");
 	const form = document.querySelector("form");
 
 	for (const tile of tiles) {
 		tile.addEventListener("click", function() {
-			GameBoard.markBoard(tile.dataset.id, "Alex");
+			GameBoard.markBoard(tile.dataset.id, Game.getTurnPlayer());
+			Game.changeTurnPlayer();
 			Display.showPlayerPositions(GameBoard.getCells(), tiles);
 		});
 	}
 
 	form.addEventListener("submit", (e) => {
 		e.preventDefault();
+		const data = new FormData(form);
+		const playerOneName = data.get("player-one");
+		const playerTwoName = data.get("player-two");
+		Game.setPlayerOne(playerOneName);
+		Game.setPlayerTwo(playerTwoName);
 	});
 })

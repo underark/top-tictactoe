@@ -79,11 +79,11 @@ const GameBoard = (function() {
 		let winnerFound = true;
 		const rowEnd = rowSize - 1;
 		const rowIndex = row * 3;
-		for (let i = rowEnd; i > 0; i--) {
-			if (board[rowIndex + i].marked == false) {
+		for (let i = rowIndex + rowEnd; i > rowIndex; i--) {
+			if (board[i].marked == false) {
 				winnerFound = false;
 				break;
-			} else if (board[rowIndex + i - 1].player !== board[i].player) {
+			} else if (board[i].player !== board[i - 1].player) {
 				winnerFound = false;
 				break;
 			}
@@ -111,26 +111,30 @@ const GameBoard = (function() {
 		const column = getColumnFromPosition(position);
 
 		if (checkLeftDiagonal()) {
+			console.log("leftD");
 			return true;
 		}
 
 		if (checkRightDiagonal()) {
+			console.log("rightD");
 			return true;
 		}
 
 		if (checkRow(row)) {
+			console.log("row");
 			return true;
 		}
 
 		if (checkColumn(column)) {
+			console.log("column");
 			return true;
 		}
 
 		return false;
 	}
 
-	setBoard();
 	return {
+		setBoard,
 		getSize,
 		getCells,
 		markBoard,
@@ -171,6 +175,10 @@ const Game = (function() {
 		turnNumber++;
 	}
 
+	const resetTurnNumber = () => {
+		turnNumber = 1;
+	}
+
 	const getTurnNumber = () => {
 		return turnNumber;
 	}
@@ -188,11 +196,11 @@ const Game = (function() {
 	}
 
 	const changeTurnPlayer = () => {
-		turnPlayer = (turnPlayer == true) ? false : true;
+		turnPlayer = !turnPlayer;
 	}
 
 	const changeGameStart = () => {
-		gameStarted = (gameStarted == true) ? false : true;
+		gameStarted = !gameStarted;
 	}
 
 	const isGameStarted = () => {
@@ -208,6 +216,7 @@ const Game = (function() {
 		changeTurnPlayer,
 		getTurnNumber,
 		incrementTurn,
+		resetTurnNumber,
 		isMaxTurn,
 		changeGameStart,
 		isGameStarted,
@@ -237,6 +246,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				const boardMarked = GameBoard.markBoard(position, Game.getTurnPlayer());
 				Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
 	
+				/* Consider moving this to its own function in Game module */
+				/* progressGame */
 				if (GameBoard.checkWinner(position)) {
 					console.log("winner!");
 				} else if (Game.isMaxTurn(GameBoard.getSize())) {
@@ -252,16 +263,17 @@ document.addEventListener("DOMContentLoaded", function() {
 	form.addEventListener("submit", (e) => {
 		e.preventDefault();
 		const data = new FormData(form);
-		switch (Game.isGameStarted()) {
-			case true:
-				break;
-			case false:
-				const playerOneName = data.get("player-one");
-				const playerTwoName = data.get("player-two");
-				Game.setPlayerOne(playerOneName);
-				Game.setPlayerTwo(playerTwoName);
-				Game.changeGameStart();
-				break;
+		/* Consider moving this to its own function called startGame in Game module*/
+		const playerOneName = data.get("player-one");
+		const playerTwoName = data.get("player-two");
+		Game.setPlayerOne(playerOneName);
+		Game.setPlayerTwo(playerTwoName);
+		GameBoard.setBoard();
+		Game.resetTurnNumber();
+		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
+
+		if (!Game.isGameStarted()) {
+			Game.changeGameStart();
 		}
 	});
 })

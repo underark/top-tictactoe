@@ -226,7 +226,11 @@ const Game = (function() {
 const Display = (function() {
 	const showPlayerPositions = (board, tiles, playerOneName) => {
 		for (const [i, tile] of tiles.entries()) {
-			if (board[i].marked !== false) tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
+			if (board[i].marked !== false) {
+				tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
+			} else {
+				tile.textContent = "";
+			}
 		}
 	}
 
@@ -262,6 +266,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	form.addEventListener("submit", (e) => {
 		e.preventDefault();
+		console.log("sent");
 		const data = new FormData(form);
 		/* Consider moving this to its own function called startGame in Game module*/
 		const playerOneName = data.get("player-one");

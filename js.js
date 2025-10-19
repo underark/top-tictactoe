@@ -175,9 +175,14 @@ const Display = (function() {
 		gameResult.classList.add("invisible");
 	}
 
-	const updatedResultText = (text) => {
+	const updateWinnerText = (name) => {
 		const gameResult = document.querySelector(".result-text");
-		gameResult.textContent = text;
+		gameResult.textContent = `Winner is ${name}`;
+	}
+
+	const updateDrawText = () => {
+		const gameResult = document.querySelector(".result-text");
+		gameResult.textContent = `It's a draw!`;
 	}
 
 	return {
@@ -186,7 +191,8 @@ const Display = (function() {
 		togglePlayerNameForm,
 		toggleResultText,
 		hideResultText,
-		updatedResultText,
+		updateWinnerText,
+		updateDrawText,
 	}
 })();
 
@@ -259,11 +265,11 @@ const Game = (function(Board, Display) {
 
 	const progressGameState = (boardMarked, winnerFound) => {
 		if (winnerFound) {
-			Display.updatedResultText(`Winner is ${getTurnPlayer()}`);
+			Display.updateWinnerText(getTurnPlayer());
 			Display.toggleResultText();
 			gameStartOff()
 		} else if (isMaxTurn(Board.getSize())) {
-			Display.updatedResultText(`Draw! No winner found`);
+			Display.updateDrawText();
 			Display.toggleResultText();
 			gameStartOff();
 		} else if (boardMarked) {

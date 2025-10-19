@@ -145,7 +145,8 @@ const GameBoard = (function() {
 })();
 
 const Display = (function() {
-	const showPlayerPositions = (board, tiles, playerOneName) => {
+	const showPlayerPositions = (board, playerOneName) => {
+		const tiles = document.querySelectorAll(".tile");
 		for (const [i, tile] of tiles.entries()) {
 			if (board[i].marked !== false) {
 				tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
@@ -278,6 +279,27 @@ const Game = (function(Board, Display) {
 		}
 	}
 
+	const startGame = (playerOneName, playerTwoName) => {
+		Game.setPlayerOne(playerOneName);
+		Game.setPlayerTwo(playerTwoName);
+		Board.setBoard();
+		Game.resetTurnNumber();
+		Display.showPlayerPositions(Board.getCells(), getPlayerOneName());
+		Display.togglePlayerNameForm();
+		Display.toggleNewGameButton();
+		Game.gameStartedOn();
+	}
+
+	const endGame = () => {
+		Board.setBoard();
+		Game.gameStartOff();
+		Game.resetTurnNumber();
+		Display.showPlayerPositions(Board.getCells(), getPlayerOneName());
+		Display.togglePlayerNameForm();
+		Display.toggleNewGameButton();
+		Display.hideResultText();
+	}
+
 	return {
 		setPlayerOne,
 		setPlayerTwo,
@@ -293,6 +315,8 @@ const Game = (function(Board, Display) {
 		gameStartOff,
 		isGameStarted,
 		progressGameState,
+		startGame,
+		endGame,
 	}
 })(GameBoard, Display);
 
@@ -310,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				const boardMarked = GameBoard.markBoard(position, Game.getTurnPlayer());
 				const winnerFound = GameBoard.checkWinner(position);
 				Game.progressGameState(boardMarked, winnerFound);
-				Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
+				Display.showPlayerPositions(GameBoard.getCells(), Game.getPlayerOneName());
 			}
 		});
 	}
@@ -321,23 +345,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		/* Consider moving this to its own function called startGame in Game module*/
 		const playerOneName = data.get("player-one");
 		const playerTwoName = data.get("player-two");
-		Game.setPlayerOne(playerOneName);
-		Game.setPlayerTwo(playerTwoName);
-		GameBoard.setBoard();
-		Game.resetTurnNumber();
-		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
-		Display.togglePlayerNameForm();
-		Display.toggleNewGameButton();
-		Game.gameStartedOn();
+		Game.startGame(playerOneName, playerTwoName);
 	});
 
 	newGameButton.addEventListener("click", () => {
-		GameBoard.setBoard();
-		Game.gameStartOff();
-		Game.resetTurnNumber();
-		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
-		Display.togglePlayerNameForm();
-		Display.toggleNewGameButton();
-		Display.hideResultText();
+		Game.endGame();
 	})
 })

@@ -144,7 +144,47 @@ const GameBoard = (function() {
 	}
 })();
 
-const Game = (function() {
+const Display = (function() {
+	const showPlayerPositions = (board, tiles, playerOneName) => {
+		for (const [i, tile] of tiles.entries()) {
+			if (board[i].marked !== false) {
+				tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
+			} else {
+				tile.textContent = "";
+			}
+		}
+	}
+
+	const toggleNewGameButton = () => {
+		const newGameSection = document.querySelector(".new-game");
+		newGameSection.classList.toggle("invisible");
+	}
+
+	const togglePlayerNameForm = () => {
+		const form = document.querySelector("form");
+		form.classList.toggle("invisible");
+	}
+
+	const toggleResultText = () => {
+		const gameResult = document.querySelector(".result-text");
+		gameResult.classList.toggle("invisible");
+	}
+
+	const updatedResultText = (text) => {
+		const gameResult = document.querySelector(".result-text");
+		gameResult.textContent = text;
+	}
+
+	return {
+		showPlayerPositions,
+		toggleNewGameButton,
+		togglePlayerNameForm,
+		toggleResultText,
+		updatedResultText,
+	}
+})();
+
+const Game = (function(Board, Display) {
 	let playerOne;
 	let playerTwo;
 	let turnPlayer = true;
@@ -199,12 +239,31 @@ const Game = (function() {
 		turnPlayer = !turnPlayer;
 	}
 
-	const changeGameStart = () => {
-		gameStarted = !gameStarted;
+	const gameStartedOn = () => {
+		gameStarted = true;
+	}
+
+	const gameStartOff = () => {
+		gameStarted = false;
 	}
 
 	const isGameStarted = () => {
 		return gameStarted;
+	}
+
+	const progressGameState = (boardMarked, winnerFound) => {
+		if (winnerFound) {
+			Display.updatedResultText(`Winner is ${getTurnPlayer()}`);
+			Display.toggleResultText();
+			gameStartOff()
+		} else if (isMaxTurn(Board.getSize())) {
+			Display.updatedResultText(`Draw! No winner found`);
+			Display.toggleResultText();
+			gameStartOff();
+		} else if (boardMarked) {
+			changeTurnPlayer();
+			incrementTurn();
+		}
 	}
 
 	return {
@@ -218,55 +277,34 @@ const Game = (function() {
 		incrementTurn,
 		resetTurnNumber,
 		isMaxTurn,
-		changeGameStart,
+		gameStartedOn,
+		gameStartOff,
 		isGameStarted,
+		progressGameState,
 	}
-})();
-
-const Display = (function() {
-	const showPlayerPositions = (board, tiles, playerOneName) => {
-		for (const [i, tile] of tiles.entries()) {
-			if (board[i].marked !== false) {
-				tile.textContent = (board[i].player == playerOneName) ? "⭕" : "❌";
-			} else {
-				tile.textContent = "";
-			}
-		}
-	}
-
-	return {
-		showPlayerPositions,
-	}
-})();
+})(GameBoard, Display);
 
 document.addEventListener("DOMContentLoaded", function() {
+	/* Hold references to these variables in modules */
+	/* Can you wrap a function in DOM content loaded to fetch and return these? */
 	const tiles = document.querySelectorAll(".tile");
 	const form = document.querySelector("form");
+	const newGameButton = document.querySelector(".new-game");
 
 	for (const tile of tiles) {
 		tile.addEventListener("click", function() {
 			if (Game.isGameStarted()) {
 				const position = tile.dataset.id;
 				const boardMarked = GameBoard.markBoard(position, Game.getTurnPlayer());
+				const winnerFound = GameBoard.checkWinner(position);
+				Game.progressGameState(boardMarked, winnerFound);
 				Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
-	
-				/* Consider moving this to its own function in Game module */
-				/* progressGame */
-				if (GameBoard.checkWinner(position)) {
-					console.log("winner!");
-				} else if (Game.isMaxTurn(GameBoard.getSize())) {
-					console.log("draw!");
-				} else if (boardMarked) {
-					Game.changeTurnPlayer();
-					Game.incrementTurn();
-				}
 			}
 		});
 	}
 
 	form.addEventListener("submit", (e) => {
 		e.preventDefault();
-		console.log("sent");
 		const data = new FormData(form);
 		/* Consider moving this to its own function called startGame in Game module*/
 		const playerOneName = data.get("player-one");
@@ -276,9 +314,17 @@ document.addEventListener("DOMContentLoaded", function() {
 		GameBoard.setBoard();
 		Game.resetTurnNumber();
 		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
-
-		if (!Game.isGameStarted()) {
-			Game.changeGameStart();
-		}
+		Display.togglePlayerNameForm();
+		Display.toggleNewGameButton();
+		Game.gameStartedOn();
 	});
+
+	newGameButton.addEventListener("click", () => {
+		GameBoard.setBoard();
+		Game.gameStartOff();
+		Game.resetTurnNumber();
+		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
+		Display.togglePlayerNameForm();
+		Display.toggleNewGameButton();
+	})
 })

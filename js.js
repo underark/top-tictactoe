@@ -170,6 +170,11 @@ const Display = (function() {
 		gameResult.classList.toggle("invisible");
 	}
 
+	const hideResultText = () => {
+		const gameResult = document.querySelector(".result-text");
+		gameResult.classList.add("invisible");
+	}
+
 	const updatedResultText = (text) => {
 		const gameResult = document.querySelector(".result-text");
 		gameResult.textContent = text;
@@ -180,6 +185,7 @@ const Display = (function() {
 		toggleNewGameButton,
 		togglePlayerNameForm,
 		toggleResultText,
+		hideResultText,
 		updatedResultText,
 	}
 })();
@@ -326,5 +332,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		Display.showPlayerPositions(GameBoard.getCells(), tiles, Game.getPlayerOneName());
 		Display.togglePlayerNameForm();
 		Display.toggleNewGameButton();
+		Display.hideResultText();
 	})
 })

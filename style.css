@@ -55,13 +55,48 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Original CSS */
+body {
+	background-color: #1b291f;
+	color: #e0dad5;
+	font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	padding: 12px;
+}
+
 form {
 	display: flex;
-	gap: 12px;
+	justify-content: center;
+	align-items: center;
+	gap: 36px;
+}
+
+label {
+	font-size: 14px;
+	letter-spacing: 1px;
+}
+
+input[type="text"] {
+	border-radius: 8px;
+}
+
+button {
+	height: 40px;
+	background-color: #f25b1f;
+	border: transparent;
+	border-radius: 8px;
+	font-weight: bold;
+}
+
+button:hover {
+	cursor: pointer;
 }
 
 .container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
 	justify-items: center;
+	align-items: center;
+	gap: 32px;
 }
 
 .board {
@@ -70,6 +105,9 @@ form {
 	justify-items: center;
 	align-items: center;
 	gap: 12px;
+	background-color: #80410e;
+	padding: 12px;
+	box-shadow: 0 150px #452003;
 }
 
 .input-group {
@@ -81,7 +119,29 @@ form {
 .tile {
 	width: 100px;
 	height: 100px;
-	background-color: yellow;
+	font-size: 64px;
+	background-color: #612d13;
+	text-align: center;
+	border-radius: 10px;
+}
+
+.tile:hover:not(.disabled) {
+	cursor: pointer;
+	background-color: #451f0c;
+}
+
+.tile:hover.disabled {
+	cursor: not-allowed;
+}
+
+.result-text {
+	font-size: 48px;
+	color: red;
+}
+
+.result-text span {
+	color: yellow;
+	font-weight: bold;
 }
 
 .invisible {

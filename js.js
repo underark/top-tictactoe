@@ -156,6 +156,20 @@ const Display = (function() {
 		}
 	}
 
+	const disableBoard = () => {
+		const tiles = document.querySelectorAll(".tile");
+		for (const tile of tiles) {
+			tile.classList.add("disabled");
+		}
+	}
+
+	const enableBoard = () => {
+		const tiles = document.querySelectorAll(".tile");
+		for (const tile of tiles) {
+			tile.classList.remove("disabled");
+		}
+	}
+
 	const toggleNewGameButton = () => {
 		const newGameSection = document.querySelector(".new-game");
 		newGameSection.classList.toggle("invisible");
@@ -178,7 +192,10 @@ const Display = (function() {
 
 	const updateWinnerText = (name) => {
 		const gameResult = document.querySelector(".result-text");
-		gameResult.textContent = `Winner is ${name}`;
+		const nameSpan = document.createElement("span");
+		nameSpan.textContent = name;
+		gameResult.textContent = `Winner is `;
+		gameResult.appendChild(nameSpan);
 	}
 
 	const updateDrawText = () => {
@@ -194,6 +211,8 @@ const Display = (function() {
 		hideResultText,
 		updateWinnerText,
 		updateDrawText,
+		enableBoard,
+		disableBoard,
 	}
 })();
 
@@ -232,10 +251,6 @@ const Game = (function(Board, Display) {
 		turnNumber = 1;
 	}
 
-	const getTurnNumber = () => {
-		return turnNumber;
-	}
-
 	const isMaxTurn = (boardSize) => {
 		if (turnNumber >= boardSize) {
 			return true;
@@ -252,7 +267,7 @@ const Game = (function(Board, Display) {
 		turnPlayer = !turnPlayer;
 	}
 
-	const gameStartedOn = () => {
+	const gameStartOn = () => {
 		gameStarted = true;
 	}
 
@@ -280,38 +295,33 @@ const Game = (function(Board, Display) {
 	}
 
 	const startGame = (playerOneName, playerTwoName) => {
-		Game.setPlayerOne(playerOneName);
-		Game.setPlayerTwo(playerTwoName);
+		setPlayerOne(playerOneName);
+		setPlayerTwo(playerTwoName);
 		Board.setBoard();
-		Game.resetTurnNumber();
+		resetTurnNumber();
 		Display.showPlayerPositions(Board.getCells(), getPlayerOneName());
 		Display.togglePlayerNameForm();
 		Display.toggleNewGameButton();
-		Game.gameStartedOn();
+		Display.enableBoard();
+		gameStartOn();
 	}
 
 	const endGame = () => {
 		Board.setBoard();
-		Game.gameStartOff();
-		Game.resetTurnNumber();
+		gameStartOff();
+		resetTurnNumber();
 		Display.showPlayerPositions(Board.getCells(), getPlayerOneName());
 		Display.togglePlayerNameForm();
 		Display.toggleNewGameButton();
 		Display.hideResultText();
+		Display.disableBoard();
 	}
 
 	return {
-		setPlayerOne,
-		setPlayerTwo,
 		getPlayerOneName,
 		getPlayerTwoName,
 		getTurnPlayer,
-		changeTurnPlayer,
-		getTurnNumber,
-		incrementTurn,
-		resetTurnNumber,
-		isMaxTurn,
-		gameStartedOn,
+		gameStartOn,
 		gameStartOff,
 		isGameStarted,
 		progressGameState,
